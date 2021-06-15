@@ -1,0 +1,6 @@
+node_modules/
+*.config.js
+.*.js
+src/colorui/*
+src/components/u-charts/
+echarts.js
