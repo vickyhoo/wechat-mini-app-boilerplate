@@ -57,11 +57,15 @@ export default class Service {
       data
     }
     conf.header = omitBy(conf.header, (v) => typeof v === 'undefined')
-    console.log(conf)
+
     return new Promise((resolve, reject) => {
       wx.request({
         ...conf,
         success(res) {
+          console.groupCollapsed(`发送请求: [${conf.method}] ${conf.url}`)
+          console.log(conf)
+          console.log('请求成功', res)
+          console.groupEnd()
           if (res.statusCode == 200 || res.statusCode == 201) {
             if (res.data.code != undefined && (!res.data.code || res.data.codeName === 'FAIL')) {
               return reject(res.data.message)
@@ -77,6 +81,10 @@ export default class Service {
           }
         },
         fail(err) {
+          console.groupCollapsed(`发送请求: [${conf.method}] ${conf.url}`)
+          console.log(conf)
+          console.log('请求失败', err)
+          console.groupEnd()
           reject(err)
         }
       })

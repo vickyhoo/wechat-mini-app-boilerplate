@@ -1,3 +1,5 @@
+import { saveOpenId } from './session'
+
 function saveImgToAlbum(imgUrl, toast) {
   wx.getImageInfo({
     src: imgUrl,
@@ -86,4 +88,48 @@ export function saveImg(imgUrl, toast = '保存成功') {
       console.log(res)
     }
   })
+}
+
+export function login(api, funcKey, force = false) {
+  return new Promise((resolve, reject) => {
+    let loginConfig = {
+      success: (res) => {
+        if (api && funcKey) {
+          api[funcKey](res.code).then((res) => {
+            saveOpenId(res.openId)
+            resolve()
+          })
+        }
+      },
+      fail(e) {
+        console.log(e)
+        reject(e)
+      }
+    }
+    wx.checkSession({
+      success: () => {
+        console.log('session ok')
+        if (force) {
+          console.log('force login...')
+          wx.login(loginConfig)
+          return
+        }
+        resolve()
+      },
+      fail() {
+        console.log('session fail, login...')
+        wx.login(loginConfig)
+      }
+    })
+  })
+}
+
+export function navigateBack(indexUrl = '/pages/index/index') {
+  console.log('navigate back');
+  let pages = getCurrentPages()
+  console.log(pages);
+  if (pages.length > 1) {
+    return wx.navigateBack()
+  }
+  wx.switchTab({ url: indexUrl })
 }
